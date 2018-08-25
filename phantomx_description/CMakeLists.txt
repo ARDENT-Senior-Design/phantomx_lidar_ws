@@ -4,4 +4,3 @@ project(phantomx_description)
 find_package(catkin REQUIRED)
 
 catkin_package()
-

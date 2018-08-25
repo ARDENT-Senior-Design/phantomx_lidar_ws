@@ -10,140 +10,124 @@
 <xacro:macro name="phantomx" params="parent *origin">
 
 
-      <joint name="j_phantomx_attachment" type="fixed">
-        <parent link="${parent}"/>
-        <child link="MP_BODY"/>
-        <xacro:insert_block name="origin" />
-      </joint>
-      
+    <joint name="j_phantomx_attachment" type="fixed">
+      <parent link="${parent}"/>
+      <child link="MP_BODY"/>
+      <xacro:insert_block name="origin" />
+    </joint>
+    
 
-      <link name="MP_BODY">
-        <inertial>
-          <origin xyz="0 0 0" />
-          <mass value="0.97559947"/>
-          <inertia ixx="3.1081800"  ixy="-0.25460189"  ixz="2.0318174" iyy="6.3787776" iyz="0.16417863" izz="5.3316425" />
-        </inertial>
-        <visual>
-          <!--origin xyz="-0.0235 0 -0.03525" rpy="0 0 0" /-->
-          <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>
-            <!--box size="0.102 0.109 0.106" /-->
-            <mesh filename="package://phantomx_description/meshes/body.STL"  scale="1 1 1"/>
-          </geometry>
-          <material name="Grey">
-            <color rgba="0.20 0.20 0.20 1.0"/>
-          </material>
-        </visual>
-        <collision>
-          <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>
-            <mesh filename="package://phantomx_description/meshes/body_coll.STL"  scale="1 1 1"/>
-          </geometry>
-        </collision>
-      </link>
-
-      <gazebo reference="MP_BODY">    
-        <material>Gazebo/Grey</material>
-      </gazebo>
-
-	   <link name="LIDAR_BOTTOM">
-      <!-- Offset the base by half the length of the cylinder -->
-      <parent link = "MP_BODY"/>
-      <origin xyz=" 0 0 0" rpy=" 0 0 0"/>
+    <link name="MP_BODY">
       <inertial>
-        <mass value="1.2"/>
-        <inertia ixx="0.00108773" iyy="0.001087473" izz="0.001092437" ixy="0" ixz="0" iyz="0"/>
+        <origin xyz="0 0 0" />
+        <mass value="0.97559947"/>
+        <inertia ixx="3.1081800"  ixy="-0.25460189"  ixz="2.0318174" iyy="6.3787776" iyz="0.16417863" izz="5.3316425" />
       </inertial>
-      <collision>
+      <visual>
+        <!--origin xyz="-0.0235 0 -0.03525" rpy="0 0 0" /-->
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <cylinder radius="0.015" length="0.02"/>
+          <!--box size="0.102 0.109 0.106" /-->
+          <mesh filename="package://phantomx_description/meshes/body.STL"  scale="1 1 1"/>
+        </geometry>
+        <material name="Grey">
+          <color rgba="0.20 0.20 0.20 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://phantomx_description/meshes/body_coll.STL"  scale="1 1 1"/>
         </geometry>
       </collision>
-      <!-- The visual is mostly a copy of the collision -->
-      <visual>
-      <geometry>
-          <cylinder radius="0.015" length="0.02"/>
-      </geometry>
-      </visual>
     </link>
-      <!-- Give the base link a unique name -->
-    <link name="LIDAR_TOP"> 
-      <!-- Offset the top by half the length of the cylinder+base height .05867 -->
-      <parent link="LIDAR_BOTTOM"/>
-      <origin xyz="0 0 0" rpy=" 0 0 0"/>
-      <inertial>
-        <mass value="0.1"/>
-        <inertia ixx="0.000090623" iyy="0.000090623" izz="0.000091036" ixy="0" ixz="0" iyz="0"/>
-      </inertial>
-      <collision>
-      <geometry>
-          <cylinder radius="0.025" length="0.02"/>
-      </geometry>
-      </collision>
-      <visual>
-      <geometry>
-          <cylinder radius="0.025" length="0.02"/>
-      </geometry>
-      </visual>
-      <!-- Qualify the object as a sensor object -->
-      <sensor type="ray" name="sensor">
-      <!--Postion the ray sensor based on the specification. Also rotate it 
-      by 90 degrees around the X-Axis so that the <horizonal> rays become vertical-->
-      <pose xyz="0 0 -0.00245" rpy="1.5707 0 0"/>
-      <!-- Enable Visualization of the rays in the GUI-->
-      <visualize>true</visualize>
-      <!-- Set an update rate of the sensor -->
-      <update_rate>30</update_rate>
-      <ray>
-        <!--Scan element contains horiz and/or vertical beams. No vertical for this-->
-        <scan>
-          <vertical samples="32" resolution="1" min_angle="-0.53529248" max_angle="0.18622663"/>
-        </scan>
-        <!-- Range of the beam -->
-        <range>
-          <min>0.05</min>
-          <max>70</max>
-          <resolution>0.02</resolution>
-        </range>
-        <!-- Generate sensor noise (Comment this out if you want an ideal sensor) -->
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.02</stddev>
-        </noise>
-      </ray>
-      </sensor>
-	  </link>
 
-    <!-- Each Joint must have a unique name -->
-	  <joint type="revolute" name="lidar_joint">
-	   	<!-- Position the joint at the bottom of the top link-->
-      <origin xyz="0 0 0.0145" rpy="0 0 0"/>
-      <!-- Use the base link as the parent of the joint -->
-      <parent link="LIDAR_BOTTOM"/>
-      <!--Use the top link as the child of the joint-->
-      <child link="LIDAR_TOP"/>
-      <!--The axis defines he joint DoF-->
-      <axis xyz="0 0 1"/>
-        <!--Limit refers to the range of motion of the joint-->
-      <limit effort="0" velocity="20" lower="-10000000000000000000000000" upper="10000000000000000000000000"/>
-	  </joint>
-    <!-- Each Joint must have a unique name -->
-	  <joint type="fixed" name="lidar_fix">
-	   	<!-- Position the joint at the bottom of the top link-->
-      <origin xyz="0.085 0 0.03" rpy="0 0 0"/>
-      <!-- Use the base link as the parent of the joint -->
-      <parent link="MP_BODY"/>
-      <!--Use the top link as the child of the joint-->
-      <child link="LIDAR_BOTTOM"/>
-	  </joint>
-
-    <gazebo reference="lidar_top">    
-      <material>Gazebo/Grey</material>
-    </gazebo>  
-    <gazebo reference="lidar_bottom">    
+    <gazebo reference="MP_BODY">    
       <material>Gazebo/Grey</material>
     </gazebo>
+
+	  <link name="hokuyo_link">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.15 0.15 0.15"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://phantomx_description/meshes/hokuyo.dae"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <mass value="0.01" />
+        <inertia ixx="0.0051411124"  ixy="-0.00057530255"  ixz="-0.000024729049" iyy="0.0081915737" iyz="-0.000019223094" izz="0.0011379812" />
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+
+  <xacro:property name="hokuyo_link" value="0.15" />
+
+  <joint name="hokuyo_joint" type="revolute">
+    <axis  xyz="0 1 0"/>
+    <origin xyz="0.1 0 0.05" rpy="0 0 0"/>
+    <parent link="MP_BODY"/>
+    <child link="hokuyo_link"/>
+    <limit lower="-0.25" upper="1.0" effort="3" velocity="1"/> 
+  </joint>
+  
+  <!-- hokuyo -->
+  <gazebo reference="hokuyo_link">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.2217</min_angle>
+            <max_angle>1.2217</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.15</min>
+          <max>5.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <!--link the plugin so it references the gazebo library laser library-->
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/phantomx/LaserScan</topicName>
+        <frameName>hokuyo_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/phantomx</robotNamespace>
+      </plugin>
+  </gazebo>
+  <transmission name="hokuyo_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="motor1">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="hokuyo_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
 
     <xacro:leg_l xyz="0.1248 -0.06164  0.001116"  rpy="0 4.7123 0.7853981633974483" suffix="rf"/>
     <xacro:leg_l xyz="0 -0.1034  0.001116"  rpy="0 4.7123 0" suffix="rm"/>
@@ -161,9 +145,6 @@
 
 
  <xacro:macro name="leg_l" params="xyz rpy suffix">
-
-
-
   <link name="c1_${suffix}">
     <inertial>
       <origin xyz="0 -${connect_offset} 0" rpy="0 0 0"  />

@@ -16,6 +16,7 @@ class PhantomX:
         self._sub_joints = rospy.Subscriber(
             ns + 'joint_states', JointState, self._cb_joints, queue_size=1)
         rospy.loginfo('Waiting for joints to be populated...')
+        
         while not rospy.is_shutdown():
             if self.joints is not None:
                 break
@@ -33,7 +34,11 @@ class PhantomX:
         rospy.sleep(1)
 
         self._pub_cmd_vel = rospy.Publisher(ns + 'cmd_vel', Twist, queue_size=1)
+        self._pub_lidar_pos = rospy.Publisher(ns + 'hokuyo_tilt_position_controller/command', Float64, queue_size=1)
 
+    def set_lidar_theta(self,t):
+        self._pub_lidar_pos.publish(t)
+        
     def set_walk_velocity(self, x, y, t):
         msg = Twist()
         msg.linear.x = x

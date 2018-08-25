@@ -1,6 +1,5 @@
 <launch>
 
-
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="worlds/empty.world"/>
     <arg name="paused" value="true"/>
@@ -16,7 +15,7 @@
 
 
   <node name="phantomx_walker" pkg="phantomx_gazebo" type="walker.py" />
-
+  <node name="phantomx_lidar_sweep" pkg="phantomx_gazebo" type="lidar_sweep_node.py"/>
 
 
 </launch>

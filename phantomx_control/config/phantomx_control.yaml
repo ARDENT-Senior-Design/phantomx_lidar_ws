@@ -5,9 +5,14 @@ phantomx:
     publish_rate: 50  
   
   # Position Controllers ---------------------------------------
-
+  
 
   # HEAD
+  hokuyo_tilt_position_controller:
+    type: effort_controllers/JointPositionController  #input position, output effort
+    joint: hokuyo_joint
+    pid: {p: 200.0,i: 0,d: 0}
+
   j_c1_lf_position_controller:
     type: effort_controllers/JointPositionController
     joint: j_c1_lf
