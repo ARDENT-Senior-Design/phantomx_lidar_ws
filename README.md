@@ -4,7 +4,7 @@ Add the packages to a workspace. Use catkin_make to build the packages and works
 
 Node that moves the lidar by decimal angle increments: lidar_sweep_node
 
-Topic for sending commands to the lidar angle: phantomx/hokuyo_tilt_position_controller/...
+Topic for sending commands to the lidar angle: phantomx/hokuyo_tilt_position_controller/commands
 
 LidarScan topic: /phantomx/LaserScan
 
